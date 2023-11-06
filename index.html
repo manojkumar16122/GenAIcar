@@ -1,0 +1,93 @@
+advanced html 1
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Car Design Generator🚗</title>
+    <style>
+        /* Add CSS for the loading GIF */
+        #loading-gif {
+            display: none; /* Hide the loading GIF by default */
+            position: absolute;
+            top: 60%; /* Adjust the top value to move it slightly down */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="font-size: 40px; color: rgb(55, 54, 54);"><b>Car CraftPro 🚗</b></h1>
+        <form method="POST" action="/" onsubmit="return validateInput()">
+            <label for="input_text">Enter the Prompt:</label>
+            <input type="text" id="input_text" name="input_text" required onfocus="hideGeneratedImage()">
+            <button type="submit" onclick="showLoadingGif()">Generate Image</button>
+        </form>
+
+        <!-- Add the loading GIF element -->
+        <img src="{{ url_for('static', filename='loading.gif') }}" alt="Loading..." id="loading-gif">
+
+        {% if image_path %}
+            <h2 style="color: white;">Generated Image</h2>
+            <!-- Add the "generated-image" class and JavaScript for animations -->
+            <img src="{{ image_path }}" alt="Generated Image" class="generated-image" onclick="handleImageClick(this)">
+            <a href="/download?image_path={{ image_path }}">Download Image</a>
+        {% endif %}
+        {% if error_message %}
+            <h2 style="color: red;">{{ error_message }}</h2>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript for animations and showing/hiding loading GIF -->
+    <script>
+        var loadingGif = document.getElementById('loading-gif');
+
+        function showLoadingGif() {
+            // Show the loading GIF when the button is clicked
+            loadingGif.style.display = 'block';
+        }
+
+        function hideGeneratedImage() {
+            // Hide the generated image when the text input box is clicked
+            var generatedImage = document.querySelector(".generated-image");
+            if (generatedImage) {
+                generatedImage.style.display = 'none';
+            }
+        }
+
+        function handleImageClick(imageElement) {
+            // Add a class to trigger the fade-out animation
+            imageElement.classList.remove("fade-in");
+            imageElement.classList.add("fade-out");
+
+            // Remove the image after the fade-out animation completes
+            setTimeout(function () {
+                imageElement.style.display = "none";
+            }, 500); // Adjust the duration as needed
+        }
+
+        function validateInput() {
+            var inputText = document.getElementById("input_text").value;
+            var keywords = ["car", "vehicle", "automobile", "auto"];
+            var containsKeyword = false;
+
+            for (var i = 0; i < keywords.length; i++) {
+                if (inputText.toLowerCase().includes(keywords[i])) {
+                    containsKeyword = true;
+                    break;
+                }
+            }
+
+            if (!containsKeyword) {
+                alert("Sorry, Only cars Images available");
+                loadingGif.style.display = 'none'; // Hide the loading GIF
+                return false; // Prevent form submission
+            }
+        }
+    </script>
+</body>
+</html>
